@@ -30,6 +30,8 @@ rnpd_new_file_path = MyFunctions.convert_XLSB_to_XLSX_and_get_new_filepath_throu
 rnpd_file_result = openpyxl.open(rnpd_new_file_path, data_only=False, read_only=False) #сюда буду записывать все изменения файла РНПД, отсюда сотрудник потом сможет перекопировать данные в файл .xlxb
 rnpd_file_result_ws = rnpd_file_result.active
 rnpd_file_result_ws.title = 'Шаблон'
+MyFunctions.restore_rnpd_file_format(rnpd_file_result_ws)
+
 
 matched_item_list = [] #сюда складываю все совпадения по индексу
 
