@@ -22,6 +22,16 @@ def prepare_sheet(sheet):
                 cell = letter + str(n)
                 sheet[cell].value = copy_cell
 
+def restore_rnpd_file_format(sheet):
+    for row_index, row in enumerate(sheet):
+        for cell_index, cell in enumerate(row):
+            if (row_index > 0):
+                row[6].value = str(row[6].value).replace(',', '.')
+                if(len(str(row[21].value)) >1):
+                    row[21].value = str(row[21].value).rjust(10, "0")
+                row[22].value = str(row[22].value).rjust(6, "0")
+                row[24].value = str(row[24].value).rjust(6, "0")
+                row[25].value = str(row[25].value).rjust(3, "0")
 
 def search_for_file_path(file_name):
     currdir = os.getcwd()
