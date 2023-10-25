@@ -1,9 +1,8 @@
-import tkinter
-from pprint import pprint
-from tkinter import filedialog
 import os
+import tkinter
+from tkinter import filedialog
+
 import pandas as pd
-from openpyxl.utils import get_column_letter
 
 root = tkinter.Tk()
 root.withdraw()  # use to hide tkinter window

@@ -43,10 +43,12 @@ MyFunctions.restore_rnpd_file_format(rnpd_file_result_ws)
 matched_item_list = []  # сюда складываю все совпадения по индексу
 
 cfo140_headers_row_index = MyFunctions.get_headers_row_index(working_sheet_cfo140_file)
-cfo140_last_row = MyFunctions.get_last_row_index_alternative(working_sheet_cfo140_file, 2, cfo140_headers_row_index)
+cfo140_last_row = MyFunctions.get_last_row_index(working_sheet_cfo140_file, cfo140_headers_row_index)
+#cfo140_last_row = MyFunctions.get_last_row_index_alternative(working_sheet_cfo140_file, 2, cfo140_headers_row_index)
 
 rnpd_file_headers_row_index = MyFunctions.get_headers_row_index(rnpd_file_result_ws)
-rnpd_last_row = MyFunctions.get_last_row_index_alternative(rnpd_file_result_ws, 2, rnpd_file_headers_row_index)
+#rnpd_last_row = MyFunctions.get_last_row_index_alternative(rnpd_file_result_ws, 2, rnpd_file_headers_row_index)
+rnpd_last_row = MyFunctions.get_last_row_index(rnpd_file_result_ws, rnpd_file_headers_row_index)
 
 cfo140_last_column_index = MyFunctions.get_last_column_index(working_sheet_cfo140_file, cfo140_headers_row_index)
 result_colunm_index = cfo140_last_column_index + 1
