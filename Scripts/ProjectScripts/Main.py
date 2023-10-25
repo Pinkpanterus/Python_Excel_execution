@@ -2,9 +2,9 @@
 # -*- coding: utf8 -*-
 
 import os
-from pprint import pprint
 from tkinter import filedialog
 
+import PySimpleGUI as sg
 import openpyxl
 from openpyxl.styles import PatternFill
 
@@ -43,10 +43,10 @@ MyFunctions.restore_rnpd_file_format(rnpd_file_result_ws)
 matched_item_list = []  # сюда складываю все совпадения по индексу
 
 cfo140_headers_row_index = MyFunctions.get_headers_row_index(working_sheet_cfo140_file)
-rnpd_file_headers_row_index = MyFunctions.get_headers_row_index(rnpd_file_result_ws)
+cfo140_last_row = MyFunctions.get_last_row_index_alternative(working_sheet_cfo140_file, 2, cfo140_headers_row_index)
 
-cfo140_last_row = MyFunctions.get_last_row_index(working_sheet_cfo140_file, cfo140_headers_row_index)
-rnpd_last_row = MyFunctions.get_last_row_index(rnpd_file_result_ws, rnpd_file_headers_row_index)
+rnpd_file_headers_row_index = MyFunctions.get_headers_row_index(rnpd_file_result_ws)
+rnpd_last_row = MyFunctions.get_last_row_index_alternative(rnpd_file_result_ws, 2, rnpd_file_headers_row_index)
 
 cfo140_last_column_index = MyFunctions.get_last_column_index(working_sheet_cfo140_file, cfo140_headers_row_index)
 result_colunm_index = cfo140_last_column_index + 1
@@ -57,6 +57,14 @@ working_sheet_cfo140_file.cell(cfo140_headers_row_index, result_colunm_index).fi
 cfo140_file.save(cfo140_new_file_path)
 cfo140_file = openpyxl.open(cfo140_new_file_path, data_only=False, read_only=False)
 working_sheet_cfo140_file = cfo140_file.active
+
+#Progressbar
+current_progress = 0
+progressbar = [[sg.ProgressBar((cfo140_last_row - cfo140_headers_row_index) * 2, orientation='h', size=(51, 10), key='progressbar')]]
+outputwin = [[sg.Output(size=(78,20))]]
+layout = [[sg.Frame('Progress',layout= progressbar)]]
+window = sg.Window('Progress window', layout, finalize=True)
+progress_bar = window['progressbar']
 
 
 cfo140_column_names = MyFunctions.get_headers_names(working_sheet_cfo140_file, cfo140_headers_row_index)
@@ -95,8 +103,11 @@ for rpnd_row_index, rnpd_row in enumerate(rnpd_file_result_ws, start=rnpd_file_h
     if (rpnd_row_index > rnpd_file_headers_row_index):
         rnpd_OE_values.append(str(rnpd_row[rnpd_column_index_OE].value).rjust(5, "0"))
 
+
 for cfo140_row_index, cfo140_row in enumerate(working_sheet_cfo140_file, start=1):
     if (cfo140_row[cfo140_column_index_BE].value not in rnpd_OE_values):
+        current_progress = current_progress + 1
+        progress_bar.UpdateBar(current_progress)
         continue
     # if (cfo140_row_index > cfo140_headers_row_index and not MyFunctions.row_is_empty(working_sheet_cfo140_file, cfo140_row_index)):  # пропускаю первую пустую строку и заголовок в файле
     if (cfo140_row_index > cfo140_headers_row_index and cfo140_row_index <= cfo140_last_row):  # пропускаю заголовок в файле
@@ -125,13 +136,19 @@ for cfo140_row_index, cfo140_row in enumerate(working_sheet_cfo140_file, start=1
                         matched_item_list.append(matched_item)
                         # Обрабатываю сопадения после цикла
 
+    current_progress = current_progress + 1
+    progress_bar.UpdateBar(current_progress)
+
 
 for cfo140_row_index, cfo140_row in enumerate(working_sheet_cfo140_file, start=1):
-    print(f'Row index: {cfo140_row_index}, header row index: {cfo140_headers_row_index}, last row: {cfo140_last_row}')
+    #print(f'Row index: {cfo140_row_index}, header row index: {cfo140_headers_row_index}, last row: {cfo140_last_row}')
     if (cfo140_row_index > cfo140_headers_row_index and cfo140_row_index <= cfo140_last_row):  # пропускаю первую пустую строку и заголовок в файле
         if (cfo140_row[cfo140_column_index_BE].value not in rnpd_OE_values):
             cfo140_row[cfo140_column_index_Kommentariy].value = f"Файл РНПД не содержит БЕ: {cfo140_row[cfo140_column_index_BE].value}!"
             cfo140_row[cfo140_column_index_Kommentariy].fill = PatternFill(DEFAULT_FILL_TYPE, start_color=WARNING_COLOR)
+
+            current_progress = current_progress + 1
+            progress_bar.UpdateBar(current_progress)
             continue
 
         cfo140_row_key = str(cfo140_row[cfo140_column_index_nomer_dogovora].value) + '-' + str(
@@ -139,7 +156,6 @@ for cfo140_row_index, cfo140_row in enumerate(working_sheet_cfo140_file, start=1
             cfo140_row[cfo140_column_index_SHPP].value) + '-' + str(
             cfo140_row[cfo140_column_index_Subject].value) + '-' + str(
             cfo140_row[cfo140_column_index_BP].value)
-
 
         if(any(x.key == cfo140_row_key for x in matched_item_list)):
             row_key_matches_count = list(map(lambda x: x.key, matched_item_list)).count(cfo140_row_key)
@@ -209,9 +225,14 @@ for cfo140_row_index, cfo140_row in enumerate(working_sheet_cfo140_file, start=1
             '''
 
         cfo140_file.save(cfo140_new_file_path)
+    current_progress = current_progress + 1
+    progress_bar.UpdateBar(current_progress)
+
 
 rnpd_file_result.save(rnpd_new_file_path)
 cfo140_file.save(cfo140_new_file_path)
+
+window.close()
 
 # Запускаю сформированные файлы
 os.startfile(rnpd_new_file_path)

@@ -87,7 +87,7 @@ def row_is_empty(worksheet, row_index):
         return True
 
 
-def get_last_row_index(worksheet, headers_row_index = -1):
+def get_last_row_index(worksheet, headers_row_index = -1): #работает медленно
     last_row_index = 0
 
     if(headers_row_index == -1):
@@ -100,6 +100,18 @@ def get_last_row_index(worksheet, headers_row_index = -1):
         last_row_index = row_index
 
     return last_row_index
+
+def get_last_row_index_alternative(worksheet, column_index,  headers_row_index = -1): #работает быстрее get_last_row_index()
+    last_row_index = 0
+
+    if(headers_row_index == -1):
+        headers_row_index = get_headers_row_index(worksheet)
+
+    column_values = []
+    for row_index, row in enumerate(worksheet, start=headers_row_index):
+        if (row_index > headers_row_index):
+            column_values.append(str(row[column_index].value))
+    return headers_row_index + len(column_values)
 
 def get_last_column_index(worksheet,headers_row_index = -1 , empty_columns_count =3):
     if(headers_row_index == -1):
