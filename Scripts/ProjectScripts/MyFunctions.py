@@ -28,13 +28,25 @@ def restore_rnpd_file_format(sheet):
     for row_index, row in enumerate(sheet):
         for cell_index, cell in enumerate(row):
             if (row_index > 0):
-                row[6].value = str(row[6].value).replace(',', '.')
+                row[6].value = str(row[6].value).replace(',', '.') #Этап
+                row_parts = row[6].value.split('.')
+                if (len(row_parts) > 1):
+                    value=''
+                    for index, part in enumerate(row_parts):
+                        if(index ==0):
+                            value = value + part.rjust(2, "0")
+                        else:
+                            value = value + '.' + part
+                    row[6].value = value
+                #if(len(row_parts) > 1):
+                #    row[6].value = row_parts[0].rjust(2, "0") + '.' + row_parts[1]  #Этап
                 if (len(str(row[21].value)) > 1):
-                    row[21].value = str(row[21].value).rjust(10, "0")
-                row[22].value = str(row[22].value).rjust(6, "0")
-                row[24].value = str(row[24].value).rjust(6, "0")
-                row[25].value = str(row[25].value).rjust(3, "0")
-
+                    row[21].value = str(row[21].value).rjust(10, "0") #Программа
+                row[22].value = str(row[22].value).rjust(6, "0") #Субъект
+                row[24].value = str(row[24].value).rjust(6, "0") #Бизнес процесс
+                row[25].value = str(row[25].value).rjust(3, "0") #МВЗ
+                row[0].value = str(row[0].value).rjust(5, "0")  #Код ОЕ
+                row[1].value = str(row[1].value).rjust(3, "0")  #ЦФО
 
 def search_for_file_path(file_name):
     currdir = os.getcwd()

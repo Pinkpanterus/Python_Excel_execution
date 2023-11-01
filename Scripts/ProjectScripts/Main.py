@@ -181,11 +181,10 @@ for cfo140_row_index, cfo140_row in enumerate(working_sheet_cfo140_file, start=1
                     rnpd_cell.value = matched_item.new_summ
                     rnpd_cell.fill = PatternFill(DEFAULT_FILL_TYPE, start_color=DEFAULT_COLOR)
 
-                    cfo140_row[
-                        cfo140_column_index_Kommentariy].value = f"В файле РНПД отредактирована сумма по строке: {matched_item.rpnd_row_index + 1}. Старая сумма: {matched_item.old_summ}. Новая сумма {matched_item.new_summ}."
+                    cfo140_row[cfo140_column_index_Kommentariy].value = f"В файле РНПД отредактирована сумма по строке: {matched_item.rpnd_row_index}. Старая сумма: {matched_item.old_summ}. Новая сумма {matched_item.new_summ}."
                 else:
                     cfo140_row[
-                        cfo140_column_index_Kommentariy].value = f"В файле РНПД сумма по строке: {matched_item.rpnd_row_index + 1} совпадает."
+                        cfo140_column_index_Kommentariy].value = f"В файле РНПД сумма по строке: {matched_item.rpnd_row_index} совпадает."
 
                 cfo140_file.save(cfo140_new_file_path)
                 '''
